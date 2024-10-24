@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Bell, Calendar, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useReactFlow } from 'reactflow';
 
 interface ActionNodeProps {
   id: string;
@@ -17,6 +18,7 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
   const [scheduledTime, setScheduledTime] = useState<Date | null>(data.scheduledTime || null);
   const [isScheduled, setIsScheduled] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const { getNodes, getEdges } = useReactFlow();
 
   useEffect(() => {
     const savedData = localStorage.getItem(`action-${id}`);
@@ -34,6 +36,45 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
     }));
   };
 
+  const getConnectedNodes = () => {
+    const nodes = getNodes();
+    const edges = getEdges();
+    const connectedNodes = [];
+    let currentNodeId = id;
+
+    while (true) {
+      const incomingEdge = edges.find(edge => edge.target === currentNodeId);
+      if (!incomingEdge) break;
+      
+      const sourceNode = nodes.find(node => node.id === incomingEdge.source);
+      if (!sourceNode) break;
+
+      connectedNodes.unshift(sourceNode);
+      currentNodeId = sourceNode.id;
+    }
+
+    return connectedNodes;
+  };
+
+  const getWorkflowSummary = () => {
+    const connectedNodes = getConnectedNodes();
+    let summary = '';
+
+    connectedNodes.forEach((node, index) => {
+      const nodeData = localStorage.getItem(`node-${node.id}`);
+      if (nodeData) {
+        const { notes, files, links } = JSON.parse(nodeData);
+        
+        summary += `\n\nNode ${index + 1}:`;
+        if (notes) summary += `\nNotes: ${notes}`;
+        if (files?.length) summary += `\nFiles: ${files.map((f: any) => f.name).join(', ')}`;
+        if (links?.length) summary += `\nLinks: ${links.join(', ')}`;
+      }
+    });
+
+    return summary || '\n\nNo connected nodes found.';
+  };
+
   const scheduleNotification = () => {
     if (scheduledTime) {
       const now = new Date();
@@ -46,15 +87,19 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
         setTimeout(() => {
           if (Notification.permission === 'granted') {
             new Notification('Workflow Notification', {
-              body: 'Your workflow has been triggered!',
-              icon: '/notification-icon.png'
+              body: `Your workflow has been triggered!${getWorkflowSummary()}`,
+              icon: '/notification-icon.png',
+              tag: id,
+              requireInteraction: true
             });
           } else if (Notification.permission !== 'denied') {
             Notification.requestPermission().then(permission => {
               if (permission === 'granted') {
                 new Notification('Workflow Notification', {
-                  body: 'Your workflow has been triggered!',
-                  icon: '/notification-icon.png'
+                  body: `Your workflow has been triggered!${getWorkflowSummary()}`,
+                  icon: '/notification-icon.png',
+                  tag: id,
+                  requireInteraction: true
                 });
               }
             });
