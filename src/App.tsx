@@ -97,8 +97,19 @@ function App() {
   );
 
   const deleteWorkflow = useCallback(() => {
+    // Clear nodes and edges
     setNodes([]);
     setEdges([]);
+    
+    // Clear all node data from localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('node-') || key.startsWith('action-'))) {
+        localStorage.removeItem(key);
+      }
+    }
+    
+    // Clear workflow from cookies
     if (cookiesAccepted) {
       Cookies.remove('workflow');
     }

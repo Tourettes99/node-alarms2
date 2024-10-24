@@ -1,33 +1,52 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Paperclip, Link as LinkIcon } from 'lucide-react';
 import Linkify from 'linkify-react';
 
 interface CustomNodeProps {
+  id: string;
   data: {
     label: string;
     notes?: string;
-    files?: File[];
+    files?: { name: string }[];
     links?: string[];
   };
+  isConnectable: boolean;
 }
 
-const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
+const CustomNode: React.FC<CustomNodeProps> = ({ id, data }) => {
   const [notes, setNotes] = useState(data.notes || '');
-  const [files, setFiles] = useState<File[]>(data.files || []);
+  const [files, setFiles] = useState<{ name: string }[]>(data.files || []);
   const [links, setLinks] = useState<string[]>(data.links || []);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const savedData = localStorage.getItem(`node-${id}`);
+    if (savedData) {
+      const { notes: savedNotes, files: savedFiles, links: savedLinks } = JSON.parse(savedData);
+      setNotes(savedNotes || '');
+      setFiles(savedFiles || []);
+      setLinks(savedLinks || []);
+    }
+  }, [id]);
+
+  const saveToLocalStorage = useCallback(() => {
+    localStorage.setItem(`node-${id}`, JSON.stringify({ notes, files, links }));
+  }, [id, notes, files, links]);
+
+  useEffect(() => {
+    saveToLocalStorage();
+  }, [notes, files, links, saveToLocalStorage]);
 
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(event.target.files || []);
-    setFiles((prev) => [...prev, ...newFiles]);
+    const newFiles = Array.from(event.target.files || []).map(file => ({ name: file.name }));
+    setFiles(prev => [...prev, ...newFiles]);
   }, []);
 
   const handleAddLink = useCallback(() => {
     const url = prompt('Enter URL:');
     if (url) {
-      setLinks((prev) => [...prev, url]);
+      setLinks(prev => [...prev, url]);
     }
   }, []);
 
