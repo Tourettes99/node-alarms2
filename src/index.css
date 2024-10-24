@@ -2,127 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .animate-gradient-x {
-    background: linear-gradient(to right, #7928ca, #ff0080, #7928ca);
-    background-size: 200% 100%;
-    animation: gradient 8s linear infinite;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+@layer base {
+  :root {
+    @apply antialiased;
   }
 
-  .animate-border-glow {
-    position: relative;
-    z-index: 0;
+  .react-flow__node {
+    @apply select-none;
   }
 
-  .animate-border-glow::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -2px;
-    padding: 2px;
-    border-radius: 8px;
-    background: linear-gradient(
-      45deg,
-      #ff0000,
-      #ff7300,
-      #fffb00,
-      #48ff00,
-      #00ffd5,
-      #002bff,
-      #7a00ff,
-      #ff00c8,
-      #ff0000
-    );
-    background-size: 400%;
-    animation: rgb-border 20s linear infinite;
-    filter: blur(4px);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+  .react-flow__handle {
+    @apply transition-all duration-300;
   }
 
-  .animate-border-glow:hover::before {
-    opacity: 1;
+  .react-flow__handle:hover {
+    @apply scale-125;
   }
 
-  .animate-border-glow-action {
-    position: relative;
-    z-index: 0;
+  .react-datepicker-wrapper {
+    @apply w-full;
   }
 
-  .animate-border-glow-action::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -2px;
-    padding: 2px;
-    border-radius: 8px;
-    background: linear-gradient(
-      45deg,
-      #00ffd5,
-      #002bff,
-      #7a00ff,
-      #ff00c8,
-      #00ffd5
-    );
-    background-size: 400%;
-    animation: rgb-border 20s linear infinite;
-    filter: blur(4px);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+  .react-datepicker {
+    @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
   }
 
-  .animate-border-glow-action:hover::before {
-    opacity: 1;
+  .react-datepicker__header {
+    @apply bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600;
+  }
+
+  .react-datepicker__current-month,
+  .react-datepicker__day-name,
+  .react-datepicker__day {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+
+  .react-datepicker__day:hover {
+    @apply bg-blue-100 dark:bg-blue-900;
+  }
+
+  .react-datepicker__day--selected {
+    @apply bg-blue-500 text-white;
   }
 }
 
-@keyframes gradient {
+@keyframes rgb-border-animation {
   0% {
-    background-position: 0% 0%;
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+  }
+  33% {
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+  66% {
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
   }
   100% {
-    background-position: 200% 0%;
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
   }
 }
 
-@keyframes rgb-border {
+@keyframes rgb-gradient-animation {
   0% {
-    background-position: 0% 50%;
+    background: linear-gradient(45deg, rgba(239, 68, 68, 0.1), rgba(59, 130, 246, 0.1));
   }
-  50% {
-    background-position: 100% 50%;
+  33% {
+    background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+  }
+  66% {
+    background: linear-gradient(45deg, rgba(16, 185, 129, 0.1), rgba(239, 68, 68, 0.1));
   }
   100% {
-    background-position: 0% 50%;
+    background: linear-gradient(45deg, rgba(239, 68, 68, 0.1), rgba(59, 130, 246, 0.1));
   }
 }
 
-.react-flow-dark .react-flow__handle {
-  background: #4a5568;
-  border-color: #2d3748;
+.rgb-border-glow {
+  animation: rgb-border-animation 10s infinite;
+  border-width: 2px;
 }
 
-.react-flow-dark .react-flow__edge path {
-  stroke: #4a5568;
-}
-
-.react-flow-dark .react-flow__background {
-  background: #1a202c;
-}
-
-.react-flow-dark .react-flow__controls {
-  background: #2d3748;
-  border-color: #4a5568;
-}
-
-.react-flow-dark .react-flow__controls button {
-  background: #2d3748;
-  border-color: #4a5568;
-  color: #e2e8f0;
-}
-
-.react-flow-dark .react-flow__minimap {
-  background: #2d3748;
+.rgb-gradient-bg {
+  animation: rgb-gradient-animation 10s infinite;
+  background-size: 200% 200%;
 }

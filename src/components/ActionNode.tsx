@@ -1,86 +1,72 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Bell } from 'lucide-react';
 
 interface ActionNodeProps {
-  isConnectable?: boolean;
+  data: {
+    label: string;
+    scheduledTime?: Date;
+  };
 }
 
-function ActionNode({ isConnectable = true }: ActionNodeProps) {
-  const [scheduledTime, setScheduledTime] = useState('');
-  const [scheduledDate, setScheduledDate] = useState('');
+const ActionNode: React.FC<ActionNodeProps> = ({ data }) => {
+  const [scheduledTime, setScheduledTime] = useState<Date | null>(data.scheduledTime || null);
 
-  const handleSchedule = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (scheduledDate && scheduledTime) {
-      const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+  const scheduleNotification = () => {
+    if (scheduledTime) {
       const now = new Date();
-      
-      if (scheduledDateTime > now) {
-        const timeoutMs = scheduledDateTime.getTime() - now.getTime();
-        
-        // Request notification permission if needed
-        if (Notification.permission !== 'granted') {
-          Notification.requestPermission();
-        }
-        
+      const timeUntilNotification = scheduledTime.getTime() - now.getTime();
+
+      if (timeUntilNotification > 0) {
         setTimeout(() => {
-          const message = "Workflow executed successfully!";
-          new Notification("Workflow Notification", {
-            body: message,
-            icon: "/workflow-icon.png"
-          });
-        }, timeoutMs);
+          if (Notification.permission === 'granted') {
+            new Notification('Workflow Notification', {
+              body: 'Your workflow has been triggered!',
+              icon: '/notification-icon.png'
+            });
+          } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+              if (permission === 'granted') {
+                new Notification('Workflow Notification', {
+                  body: 'Your workflow has been triggered!',
+                  icon: '/notification-icon.png'
+                });
+              }
+            });
+          }
+        }, timeUntilNotification);
       }
     }
   };
 
   return (
-    <div className="px-4 py-2 shadow-lg rounded-md bg-gradient-to-r from-blue-500 to-purple-500
-      text-white min-w-[200px] group relative animate-border-glow-action">
-      <Handle 
-        type="target" 
-        position={Position.Left} 
-        className="w-3 h-3" 
-        isConnectable={isConnectable}
-      />
-      
-      <div className="space-y-2">
-        <h3 className="font-semibold">Schedule Action</h3>
+    <div className="relative p-4 rounded-xl bg-white dark:bg-gray-800 shadow-xl min-w-[200px]
+      rgb-border-glow group transition-all duration-300">
+      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-blue-500" />
+
+      <div className="absolute inset-0 rounded-xl rgb-gradient-bg opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <div className="relative flex flex-col items-center gap-3">
+        <Bell className="w-6 h-6 text-blue-500" />
         
-        <div>
-          <input
-            type="date"
-            value={scheduledDate}
-            onChange={(e) => setScheduledDate(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full p-1 rounded bg-white/10 border border-white/20
-              focus:outline-none focus:ring-2 focus:ring-white/50"
-          />
-        </div>
-        
-        <div>
-          <input
-            type="time"
-            value={scheduledTime}
-            onChange={(e) => setScheduledTime(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full p-1 rounded bg-white/10 border border-white/20
-              focus:outline-none focus:ring-2 focus:ring-white/50"
-          />
-        </div>
-        
-        <button
-          onClick={handleSchedule}
-          className="w-full py-1 px-2 rounded bg-white/20 hover:bg-white/30
-            transition-colors duration-300"
-        >
-          Schedule Workflow
-        </button>
+        <DatePicker
+          selected={scheduledTime}
+          onChange={(date: Date) => {
+            setScheduledTime(date);
+            scheduleNotification();
+          }}
+          showTimeSelect
+          dateFormat="MMMM d, yyyy h:mm aa"
+          className="w-full p-2 rounded bg-transparent border border-gray-300 dark:border-gray-600
+            focus:border-blue-500 dark:focus:border-blue-500 outline-none
+            text-gray-800 dark:text-gray-200 text-center"
+          placeholderText="Select date and time"
+        />
       </div>
     </div>
   );
-}
+};
 
 export default ActionNode;

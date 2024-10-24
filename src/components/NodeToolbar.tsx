@@ -1,52 +1,42 @@
 import React from 'react';
-import { FileText, Bell } from 'lucide-react';
+import { FileText, Clock } from 'lucide-react';
 
-interface NodeToolbarProps {
-  isDarkMode: boolean;
-  isLocked: boolean;
-}
-
-function NodeToolbar({ isDarkMode, isLocked }: NodeToolbarProps) {
+const NodeToolbar = () => {
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
-    if (isLocked) {
-      event.preventDefault();
-      return;
-    }
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };
 
   return (
-    <div className={`absolute left-4 top-4 z-10 p-2 rounded-lg shadow-lg
-      ${isDarkMode ? 'bg-gray-800' : 'bg-white'} 
-      transition-all duration-300`}>
-      <div className="flex gap-2">
+    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+      <div className="flex flex-col gap-4 p-4 rounded-xl bg-white bg-opacity-10 backdrop-blur-lg
+        shadow-lg border border-white border-opacity-20">
         <div
-          draggable={!isLocked}
-          onDragStart={(e) => onDragStart(e, 'custom')}
-          className={`flex items-center gap-2 p-2 rounded cursor-grab
-            ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}
-            transition-colors duration-300
-            ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          draggable
+          onDragStart={(e) => onDragStart(e, 'node')}
+          className="cursor-grab active:cursor-grabbing"
         >
-          <FileText size={20} className={isDarkMode ? 'text-white' : 'text-gray-900'} />
-          <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>Note Node</span>
+          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-r
+            from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600
+            transition-all duration-300 group">
+            <FileText className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform" />
+          </div>
         </div>
         
         <div
-          draggable={!isLocked}
+          draggable
           onDragStart={(e) => onDragStart(e, 'action')}
-          className={`flex items-center gap-2 p-2 rounded cursor-grab
-            ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}
-            transition-colors duration-300
-            ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className="cursor-grab active:cursor-grabbing"
         >
-          <Bell size={20} className={isDarkMode ? 'text-white' : 'text-gray-900'} />
-          <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>Action Node</span>
+          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-r
+            from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600
+            transition-all duration-300 group">
+            <Clock className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform" />
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default NodeToolbar;
