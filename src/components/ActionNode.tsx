@@ -3,9 +3,11 @@ import { Handle, Position } from 'reactflow';
 
 interface ActionNodeProps {
   isConnectable?: boolean;
+  noteContent: string;
+  files: File[];
 }
 
-function ActionNode({ isConnectable = true }: ActionNodeProps) {
+function ActionNode({ isConnectable = true, noteContent, files }: ActionNodeProps) {
   const [scheduledTime, setScheduledTime] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
 
@@ -26,10 +28,20 @@ function ActionNode({ isConnectable = true }: ActionNodeProps) {
         }
         
         setTimeout(() => {
-          const message = "Workflow executed successfully!";
+          const fileNames = files.map(file => file.name).join(', ');
+          const message = `Workflow executed successfully! Note: "${noteContent}". Files: ${fileNames}`;
           new Notification("Workflow Notification", {
             body: message,
             icon: "/workflow-icon.png"
+          });
+
+          // Log interaction
+          fetch('/log-interaction', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ note: noteContent, files: fileNames.split(', ') }),
           });
         }, timeoutMs);
       }
