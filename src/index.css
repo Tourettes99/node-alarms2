@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-gradient-x {
+    background: linear-gradient(to right, #7928ca, #ff0080, #7928ca);
+    background-size: 200% 100%;
+    animation: gradient 8s linear infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .animate-border-glow {
+    position: relative;
+    z-index: 0;
+  }
+
+  .animate-border-glow::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -2px;
+    padding: 2px;
+    border-radius: 8px;
+    background: linear-gradient(
+      45deg,
+      #ff0000,
+      #ff7300,
+      #fffb00,
+      #48ff00,
+      #00ffd5,
+      #002bff,
+      #7a00ff,
+      #ff00c8,
+      #ff0000
+    );
+    background-size: 400%;
+    animation: rgb-border 20s linear infinite;
+    filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .animate-border-glow:hover::before {
+    opacity: 1;
+  }
+
+  .animate-border-glow-action {
+    position: relative;
+    z-index: 0;
+  }
+
+  .animate-border-glow-action::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -2px;
+    padding: 2px;
+    border-radius: 8px;
+    background: linear-gradient(
+      45deg,
+      #00ffd5,
+      #002bff,
+      #7a00ff,
+      #ff00c8,
+      #00ffd5
+    );
+    background-size: 400%;
+    animation: rgb-border 20s linear infinite;
+    filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .animate-border-glow-action:hover::before {
+    opacity: 1;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+@keyframes rgb-border {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.react-flow-dark .react-flow__handle {
+  background: #4a5568;
+  border-color: #2d3748;
+}
+
+.react-flow-dark .react-flow__edge path {
+  stroke: #4a5568;
+}
+
+.react-flow-dark .react-flow__background {
+  background: #1a202c;
+}
+
+.react-flow-dark .react-flow__controls {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.react-flow-dark .react-flow__controls button {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.react-flow-dark .react-flow__minimap {
+  background: #2d3748;
+}
