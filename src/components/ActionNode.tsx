@@ -63,10 +63,10 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
       if (nodeData) {
         const { notes, files, links } = JSON.parse(nodeData);
         
-        summary += `\n\nNode ${index + 1}:`;
-        if (notes) summary += `\nNotes: ${notes}`;
-        if (files?.length) summary += `\nFiles: ${files.map((f: any) => f.name).join(', ')}`;
-        if (links?.length) summary += `\nLinks: ${links.join(', ')}`;
+        summary += `\n\nStep ${index + 1}:`;
+        if (notes?.trim()) summary += `\n📝 Notes: ${notes}`;
+        if (files?.length) summary += `\n📎 Files: ${files.map((f: any) => f.name).join(', ')}`;
+        if (links?.length) summary += `\n🔗 Links: ${links.join('\n🔗 ')}`;
       }
     });
 
@@ -84,8 +84,8 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
 
         setTimeout(() => {
           if (Notification.permission === 'granted') {
-            new Notification('Workflow Notification', {
-              body: `Your workflow has been triggered!${getWorkflowSummary()}`,
+            new Notification('Workflow Steps', {
+              body: `Your workflow is ready!${getWorkflowSummary()}`,
               icon: '/notification-icon.png',
               tag: id,
               requireInteraction: true
@@ -93,8 +93,8 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
           } else if (Notification.permission !== 'denied') {
             Notification.requestPermission().then(permission => {
               if (permission === 'granted') {
-                new Notification('Workflow Notification', {
-                  body: `Your workflow has been triggered!${getWorkflowSummary()}`,
+                new Notification('Workflow Steps', {
+                  body: `Your workflow is ready!${getWorkflowSummary()}`,
                   icon: '/notification-icon.png',
                   tag: id,
                   requireInteraction: true
