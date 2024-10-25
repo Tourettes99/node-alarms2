@@ -38,9 +38,13 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
     const nodes = getNodes();
     const edges = getEdges();
     const connectedNodes = [];
+    const visited = new Set();
     let currentNodeId = id;
 
     while (true) {
+      if (visited.has(currentNodeId)) break;
+      visited.add(currentNodeId);
+
       const incomingEdge = edges.find(edge => edge.target === currentNodeId);
       if (!incomingEdge) break;
       
@@ -63,10 +67,12 @@ const ActionNode: React.FC<ActionNodeProps> = ({ id, data }) => {
       if (nodeData) {
         const { notes, files, links } = JSON.parse(nodeData);
         
-        summary += `\n\nStep ${index + 1}:`;
-        if (notes?.trim()) summary += `\n📝 Notes: ${notes}`;
-        if (files?.length) summary += `\n📎 Files: ${files.map((f: any) => f.name).join(', ')}`;
-        if (links?.length) summary += `\n🔗 Links: ${links.join('\n🔗 ')}`;
+        if (notes?.trim() || files?.length || links?.length) {
+          summary += `\n\nStep ${index + 1}:`;
+          if (notes?.trim()) summary += `\n📝 Notes: ${notes.trim()}`;
+          if (files?.length) summary += `\n📎 Files: ${files.map((f: any) => f.name).join(', ')}`;
+          if (links?.length) summary += `\n🔗 Links: ${links.join('\n🔗 ')}`;
+        }
       }
     });
 
